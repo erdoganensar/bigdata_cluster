@@ -63,10 +63,10 @@ if [[ $1 = "install" ]]; then
   
    # 3 nodes
   echo ">> Starting master and worker nodes ..."
-  docker run -d --net hadoopnet --ip 172.20.1.1 -p 8088:8088 --hostname nodemaster --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --name nodemaster -it ensaradaletai/bigdata_hive:3.1.3
+  docker run -d --net hadoopnet --ip 172.20.1.1 -p 8088:8088 -p 8090:8080 -p 50070:50070 --hostname nodemaster --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --name nodemaster -it ensaradaletai/bigdata_hive:3.1.3
   docker run -d --net hadoopnet --ip 172.20.1.2 --hostname node2 --add-host nodemaster:172.20.1.1 --add-host node3:172.20.1.3  --name node2 -it ensaradaletai/bigdata_spark:3.3.1
   docker run -d --net hadoopnet --ip 172.20.1.3 --hostname node3 --add-host nodemaster:172.20.1.1 --add-host node2:172.20.1.2 --name node3 -it ensaradaletai/bigdata_spark:3.3.1
-  docker run -d --net hadoopnet --ip 172.20.1.5 --hostname jupyter --add-host nodemaster:172.20.1.1 --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --add-host psqlhms:172.20.1.4 --name jupyter -it ensaradaletai/bigdata_jupyter 
+  docker run -d --net hadoopnet --ip 172.20.1.5 -p 8888:8888 --hostname jupyter --add-host nodemaster:172.20.1.1 --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --add-host psqlhms:172.20.1.4 --name jupyter -it ensaradaletai/bigdata_jupyter 
   
   # Format nodemaster
   echo ">> Formatting hdfs ..."
