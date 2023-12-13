@@ -2,7 +2,7 @@
 
 # Bring the services up
 function startServices {
-  docker start psqlhms nodemaster node2 node3 nifi hue edge
+  docker start psqlhms nodemaster node2 node3 jupyter
   sleep 5
   echo ">> Starting hdfs ..."
   docker exec -u hadoop -it nodemaster /home/hadoop/hadoop/sbin/start-dfs.sh
@@ -58,17 +58,16 @@ if [[ $1 = "install" ]]; then
   
   # Starting Postresql Hive metastore
   echo ">> Starting postgresql hive metastore ..."
-  docker run -d --net hadoopnet --ip 172.20.1.4 --hostname psqlhms --name psqlhms -e POSTGRES_PASSWORD=hive -it ensaradaletai/bigdata_postgres-hms
+  docker run -d --net hadoopnet --ip 172.20.1.4 --hostname psqlhms --name psqlhms -e POSTGRES_PASSWORD=hive -it ensaradaletai/bigdata_postgres
   sleep 5
   
    # 3 nodes
   echo ">> Starting master and worker nodes ..."
   docker run -d --net hadoopnet --ip 172.20.1.1 -p 8088:8088 --hostname nodemaster --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --name nodemaster -it ensaradaletai/bigdata_hive:3.1.3
-  docker run -d --net hadoopnet --ip 172.20.1.2 --hostname node2 --add-host nodemaster:172.20.1.1 --add-host node3:172.20.1.3 --name node2 -it ensaradaletai/bigdata_spark:3.3.2
-  docker run -d --net hadoopnet --ip 172.20.1.3 --hostname node3 --add-host nodemaster:172.20.1.1 --add-host node2:172.20.1.2 --name node3 -it ensaradaletai/bigdata_spark:3.3.2
-  docker run -d --net hadoopnet --ip 172.20.1.5 --hostname edge --add-host nodemaster:172.20.1.1 --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --add-host psqlhms:172.20.1.4 --name edge -it ensaradaletai/bigdata_edge 
-  docker run -d --net hadoopnet --ip 172.20.1.6 -p 8080:8080 --hostname nifi --add-host nodemaster:172.20.1.1 --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --add-host psqlhms:172.20.1.4 --name nifi -it ensaradaletai/bigdata_nifi:1.9.2  
-  docker run -d --net hadoopnet --ip 172.20.1.7  -p 8888:8888 --hostname huenode --add-host edge:172.20.1.5 --add-host nodemaster:172.20.1.1 --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --add-host psqlhms:172.20.1.4 --name hue -it ensaradaletai/bigdata_hue
+  docker run -d --net hadoopnet --ip 172.20.1.2 --hostname node2 --add-host nodemaster:172.20.1.1 --add-host node3:172.20.1.3  --name node2 -it ensaradaletai/bigdata_spark:3.3.1
+  docker run -d --net hadoopnet --ip 172.20.1.3 --hostname node3 --add-host nodemaster:172.20.1.1 --add-host node2:172.20.1.2 --name node3 -it ensaradaletai/bigdata_spark:3.3.1
+  docker run -d --net hadoopnet --ip 172.20.1.5 --hostname jupyter --add-host nodemaster:172.20.1.1 --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --add-host psqlhms:172.20.1.4 --name jupyter -it ensaradaletai/bigdata_jupyter 
+  
   # Format nodemaster
   echo ">> Formatting hdfs ..."
   docker exec -u hadoop -it nodemaster /home/hadoop/hadoop/bin/hdfs namenode -format
