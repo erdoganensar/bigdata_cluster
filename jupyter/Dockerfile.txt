@@ -26,14 +26,14 @@ USER $USERNAME
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
 
 # Hadoop
-#COPY --from=base --chown=$USERNAME:$GROUPNAME /opt/hadoop /opt/hadoop
+COPY --from=ensaradaletai/bigdata_hive:3.1.3 --chown=$USERNAME:$GROUPNAME /home/hadoop/hadoop /home/hadoop/hadoop
 ENV HADOOP_HOME=/home/hadoop/hadoop
 ENV HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
 ENV PATH=$HADOOP_HOME/sbin:$HADOOP_HOME/bin:$PATH
 ENV LD_LIBRARY_PATH=$HADOOP_HOME/lib/native:$LD_LIBRARY_PATH
 
 # Spark
-#COPY --from=base --chown=$USERNAME:$GROUPNAME /opt/spark /opt/spark
+COPY --from=ensaradaletai/bigdata_hive:3.1.3 --chown=$USERNAME:$GROUPNAME /home/hadoop/spark /home/hadoop/spark
 ENV SPARK_HOME=/home/hadoop/spark
 ENV PYTHONHASHSEED=1
 ENV PYSPARK_PYTHON=python3
@@ -41,7 +41,7 @@ ENV SPARK_CONF_DIR=$SPARK_HOME/conf
 ENV PATH=$SPARK_HOME/sbin:$SPARK_HOME/bin:$PATH
 
 # Hive
-#COPY --from=base --chown=$USERNAME:$GROUPNAME /opt/hive /opt/hive
+COPY --from=ensaradaletai/bigdata_hive:3.1.3 --chown=$USERNAME:$GROUPNAME /home/hadoop/hive /home/hadoop/hive
 ENV HIVE_HOME=/home/hadoop/hive
 ENV HIVE_CONF_DIR=$HIVE_HOME/conf
 ENV PATH=$HIVE_HOME/sbin:$HIVE_HOME/bin:$PATH
@@ -54,5 +54,3 @@ RUN sudo pip install -U pip &&\
     tensorflow-serving-api
 
 WORKDIR /home/$USERNAME
-
-
