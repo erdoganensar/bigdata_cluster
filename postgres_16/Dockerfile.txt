@@ -1,0 +1,6 @@
+FROM postgres
+
+USER root
+
+RUN export LANGUAGE=en_US.UTF-8
+COPY configs/init.sql	/docker-entrypoint-initdb.d/init.sql
